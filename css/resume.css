@@ -739,9 +739,9 @@ section.resume-section {
 .resume-date span {
   font-family: var(--font-tech);
   font-size: 0.76rem;
-  color: var(--text-dim) !important;
+  color: var(--text) !important;
   background: var(--panel);
-  border: 1px solid var(--border);
+  border: 1px solid var(--border-hi);
   padding: 3px 12px;
   border-radius: 2px;
   white-space: nowrap;
@@ -762,13 +762,18 @@ section.resume-section {
 }
 
 .list-icons .list-inline-item {
+  display: inline-flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
   background: var(--panel);
   border: 1px solid var(--border);
-  padding: 0.5rem 0.65rem;
+  padding: 0.6rem 0.75rem 0.5rem;
   border-radius: 3px;
   transition: all 0.25s ease;
   position: relative;
   margin: 0;
+  min-width: 3.5rem;
 }
 
 .list-icons .list-inline-item:hover {
@@ -781,10 +786,27 @@ section.resume-section {
   display: block;
   filter: grayscale(70%) brightness(0.75);
   transition: filter 0.25s ease;
+  line-height: 1;
 }
 
 .list-icons .list-inline-item:hover i {
   filter: grayscale(0%) brightness(1.2);
+}
+
+.skill-label {
+  font-family: var(--font-tech);
+  font-size: 0.52rem;
+  color: var(--text-dim);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  text-align: center;
+  transition: color 0.25s ease;
+  white-space: nowrap;
+  line-height: 1;
+}
+
+.list-icons .list-inline-item:hover .skill-label {
+  color: var(--text);
 }
 
 /* ============================================================
