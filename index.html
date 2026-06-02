@@ -26,6 +26,7 @@
   
   <!-- Custom CSS -->
   <link href="css/resume.min.css" rel="stylesheet">
+  <link href="css/resume.css" rel="stylesheet">
 </head>
 
 <body id="page-top">
@@ -306,17 +307,46 @@
     <div class="my-auto">
       <h2 class="mb-5">Projetos</h2>
       <div class="mb-4">
-        <div class="card mb-3" style="max-width: 36rem;">
+        <div class="card mb-3" style="max-width: 52rem;">
           <div class="card-body">
             <h4 class="card-title">Pipeline de KPIs Logísticos — Olist Dataset</h4>
             <div class="subheading mb-3">Python · PostgreSQL · Docker · Streamlit · Plotly</div>
             <p class="card-text">Primeiro projeto de engenharia de dados construído do zero. Peguei o dataset público de e-commerce brasileiro da Olist e montei um pipeline ELT completo: os dados brutos entram via ingestão com SQLAlchemy, passam por transformações em SQL agrupadas por estado e período, e chegam num dashboard de 6 páginas com mapas coropléticos e filtros dinâmicos. Tudo containerizado com Docker.</p>
             <p class="card-text">O projeto existe porque eu precisava provar pra mim mesmo que consigo fazer o fluxo inteiro — da ingestão até a visualização.</p>
+
+            <!-- Screenshot Gallery -->
+            <div class="project-gallery">
+              <div class="gallery-bar">
+                <span class="gallery-bar-title">// screenshots</span>
+                <span class="gallery-bar-counter" id="olist-counter">[01/09]</span>
+              </div>
+              <div class="gallery-viewport" id="olist-viewport">
+                <button class="gallery-btn gallery-prev" id="olist-prev" aria-label="Anterior">&#x276E;</button>
+                <img class="gallery-img" id="olist-img"
+                     src="screenshots/olist-kpi-pipeline/01_visao_geral.png"
+                     alt="Dashboard Olist KPI — Visão Geral">
+                <button class="gallery-btn gallery-next" id="olist-next" aria-label="Próximo">&#x276F;</button>
+              </div>
+              <div class="gallery-footer">
+                <span class="gallery-label" id="olist-label">Visão Geral</span>
+                <div class="gallery-dots" id="olist-dots"></div>
+              </div>
+            </div>
+
             <a href="https://github.com/ThiagoReisFreitas/olist-kpi-pipeline" target="_blank" class="btn custom-btn-color">
               <i class="bi bi-github"></i>
               Ver no GitHub
             </a>
           </div>
+        </div>
+
+        <!-- Lightbox -->
+        <div class="gallery-lightbox" id="olist-lightbox">
+          <button class="gallery-lightbox-close" id="olist-lb-close">[ ESC — fechar ]</button>
+          <button class="gallery-lightbox-nav lb-prev" id="olist-lb-prev" aria-label="Anterior">&#x276E;</button>
+          <img id="olist-lb-img" src="" alt="Screenshot em tamanho completo">
+          <button class="gallery-lightbox-nav lb-next" id="olist-lb-next" aria-label="Próximo">&#x276F;</button>
+          <span class="gallery-lightbox-label" id="olist-lb-label"></span>
         </div>
       </div>
     </div>
@@ -403,6 +433,123 @@
   <script src="vendor/jquery/jquery.min.js"></script>
   <script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
   <script src="js/resume.min.js"></script>
+
+  <script>
+  (function () {
+    var slides = [
+      { src: 'screenshots/olist-kpi-pipeline/01_visao_geral.png',    label: 'Visão Geral' },
+      { src: 'screenshots/olist-kpi-pipeline/02_otd.png',             label: 'OTD — On Time Delivery' },
+      { src: 'screenshots/olist-kpi-pipeline/03_lead_time.png',       label: 'Lead Time' },
+      { src: 'screenshots/olist-kpi-pipeline/04_perfect_order.png',   label: 'Perfect Order' },
+      { src: 'screenshots/olist-kpi-pipeline/05_frete.png',           label: 'Frete' },
+      { src: 'screenshots/olist-kpi-pipeline/06_atraso_satisfacao.png', label: 'Atraso × Satisfação' },
+      { src: 'screenshots/olist-kpi-pipeline/07_tendencia.png',       label: 'Tendência' },
+      { src: 'screenshots/olist-kpi-pipeline/08_categorias.png',      label: 'Categorias' },
+      { src: 'screenshots/olist-kpi-pipeline/09_pagamentos.png',      label: 'Pagamentos' },
+    ];
+
+    var current = 0;
+    var imgEl      = document.getElementById('olist-img');
+    var labelEl    = document.getElementById('olist-label');
+    var counterEl  = document.getElementById('olist-counter');
+    var dotsEl     = document.getElementById('olist-dots');
+    var lightbox   = document.getElementById('olist-lightbox');
+    var lbImg      = document.getElementById('olist-lb-img');
+    var lbLabel    = document.getElementById('olist-lb-label');
+    var dots       = [];
+
+    // Preload all images
+    slides.forEach(function (s) {
+      var img = new Image();
+      img.src = s.src;
+    });
+
+    // Build dot indicators
+    slides.forEach(function (_, i) {
+      var dot = document.createElement('button');
+      dot.className = 'gallery-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Ir para slide ' + (i + 1));
+      dot.addEventListener('click', function () { goTo(i); });
+      dotsEl.appendChild(dot);
+      dots.push(dot);
+    });
+
+    function updateDots() {
+      dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
+    }
+
+    function goTo(idx) {
+      current = (idx + slides.length) % slides.length;
+      var s = slides[current];
+
+      imgEl.classList.add('fade');
+      setTimeout(function () {
+        imgEl.src = s.src;
+        imgEl.onload = function () { imgEl.classList.remove('fade'); };
+      }, 150);
+
+      labelEl.textContent   = s.label;
+      counterEl.textContent = '[' + String(current + 1).padStart(2, '0') + '/' + slides.length + ']';
+      if (lightbox.classList.contains('open')) {
+        lbImg.src         = s.src;
+        lbLabel.textContent = s.label;
+      }
+      updateDots();
+    }
+
+    document.getElementById('olist-prev').addEventListener('click', function (e) {
+      e.stopPropagation();
+      goTo(current - 1);
+    });
+    document.getElementById('olist-next').addEventListener('click', function (e) {
+      e.stopPropagation();
+      goTo(current + 1);
+    });
+
+    // Open lightbox on image click
+    document.getElementById('olist-viewport').addEventListener('click', function (e) {
+      if (e.target.classList.contains('gallery-btn')) return;
+      lbImg.src           = slides[current].src;
+      lbLabel.textContent = slides[current].label;
+      lightbox.classList.add('open');
+    });
+
+    // Close lightbox
+    function closeLightbox() { lightbox.classList.remove('open'); }
+    document.getElementById('olist-lb-close').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function (e) {
+      if (e.target === lightbox || e.target === lbImg) closeLightbox();
+    });
+
+    document.getElementById('olist-lb-prev').addEventListener('click', function (e) {
+      e.stopPropagation();
+      goTo(current - 1);
+    });
+    document.getElementById('olist-lb-next').addEventListener('click', function (e) {
+      e.stopPropagation();
+      goTo(current + 1);
+    });
+
+    // Keyboard navigation
+    document.addEventListener('keydown', function (e) {
+      if (lightbox.classList.contains('open')) {
+        if (e.key === 'Escape')     closeLightbox();
+        if (e.key === 'ArrowLeft')  goTo(current - 1);
+        if (e.key === 'ArrowRight') goTo(current + 1);
+        return;
+      }
+    });
+
+    // Touch swipe on carousel
+    var startX = 0;
+    var viewport = document.getElementById('olist-viewport');
+    viewport.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    viewport.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+  })();
+  </script>
 </body>
 
 </html>
