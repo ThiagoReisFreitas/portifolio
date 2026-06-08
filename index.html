@@ -349,6 +349,50 @@
           <span class="gallery-lightbox-label" id="olist-lb-label"></span>
         </div>
       </div>
+
+      <div class="mb-4">
+        <div class="card mb-3" style="max-width: 52rem;">
+          <div class="card-body">
+            <h4 class="card-title">Crypto Monitor — Pipeline de Dados de Criptomoedas</h4>
+            <div class="subheading mb-3">Python · PostgreSQL · dbt · Apache Airflow · Streamlit · Docker</div>
+            <p class="card-text">Pipeline de dados cripto ponta a ponta. Coleta candles diários de BTC, ETH, BNB, SOL e ADA via Binance API, câmbio USD/BRL via BACEN e índice Fear & Greed — tudo orquestrado pelo Apache Airflow com execução automática diária. O dbt calcula RSI(14), Médias Móveis, Bollinger Bands, MACD e sinais de alta confluência.</p>
+            <p class="card-text">O resultado é um dashboard Streamlit de 3 páginas: análise técnica por ativo, comparação e heatmap de correlação entre ativos, e backtesting de estratégias com curva de capital. Tudo containerizado com Docker.</p>
+
+            <!-- Screenshot Gallery -->
+            <div class="project-gallery">
+              <div class="gallery-bar">
+                <span class="gallery-bar-title">// screenshots</span>
+                <span class="gallery-bar-counter" id="binance-counter">[01/09]</span>
+              </div>
+              <div class="gallery-viewport" id="binance-viewport">
+                <button class="gallery-btn gallery-prev" id="binance-prev" aria-label="Anterior">&#x276E;</button>
+                <img class="gallery-img" id="binance-img"
+                     src="screenshots/binance-pipeline/01_btc_analise_tecnica.png"
+                     alt="Crypto Monitor — BTC Análise Técnica">
+                <button class="gallery-btn gallery-next" id="binance-next" aria-label="Próximo">&#x276F;</button>
+              </div>
+              <div class="gallery-footer">
+                <span class="gallery-label" id="binance-label">BTC — Análise Técnica</span>
+                <div class="gallery-dots" id="binance-dots"></div>
+              </div>
+            </div>
+
+            <a href="https://github.com/ThiagoReisFreitas/binance-pipeline" target="_blank" class="btn custom-btn-color">
+              <i class="bi bi-github"></i>
+              Ver no GitHub
+            </a>
+          </div>
+        </div>
+
+        <!-- Lightbox -->
+        <div class="gallery-lightbox" id="binance-lightbox">
+          <button class="gallery-lightbox-close" id="binance-lb-close">[ ESC — fechar ]</button>
+          <button class="gallery-lightbox-nav lb-prev" id="binance-lb-prev" aria-label="Anterior">&#x276E;</button>
+          <img id="binance-lb-img" src="" alt="Screenshot em tamanho completo">
+          <button class="gallery-lightbox-nav lb-next" id="binance-lb-next" aria-label="Próximo">&#x276F;</button>
+          <span class="gallery-lightbox-label" id="binance-lb-label"></span>
+        </div>
+      </div>
     </div>
   </section>
 
@@ -543,6 +587,117 @@
     // Touch swipe on carousel
     var startX = 0;
     var viewport = document.getElementById('olist-viewport');
+    viewport.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
+    viewport.addEventListener('touchend', function (e) {
+      var dx = e.changedTouches[0].clientX - startX;
+      if (Math.abs(dx) > 40) goTo(current + (dx < 0 ? 1 : -1));
+    }, { passive: true });
+  })();
+  </script>
+
+  <script>
+  (function () {
+    var slides = [
+      { src: 'screenshots/binance-pipeline/01_btc_analise_tecnica.png', label: 'BTC — Análise Técnica' },
+      { src: 'screenshots/binance-pipeline/02_btc_sinais.png',           label: 'BTC — Sinais' },
+      { src: 'screenshots/binance-pipeline/03_btc_sazonalidade.png',     label: 'BTC — Sazonalidade' },
+      { src: 'screenshots/binance-pipeline/04_eth_analise_tecnica.png',  label: 'ETH — Análise Técnica' },
+      { src: 'screenshots/binance-pipeline/05_sol_analise_tecnica.png',  label: 'SOL — Análise Técnica' },
+      { src: 'screenshots/binance-pipeline/06_comparacao_ativos.png',    label: 'Comparação entre Ativos' },
+      { src: 'screenshots/binance-pipeline/07_heatmap_correlacao.png',   label: 'Heatmap de Correlação' },
+      { src: 'screenshots/binance-pipeline/08_backtest_rsi.png',         label: 'Backtest — RSI' },
+      { src: 'screenshots/binance-pipeline/09_backtest_ma_crossover.png',label: 'Backtest — MA Crossover' },
+    ];
+
+    var current = 0;
+    var imgEl      = document.getElementById('binance-img');
+    var labelEl    = document.getElementById('binance-label');
+    var counterEl  = document.getElementById('binance-counter');
+    var dotsEl     = document.getElementById('binance-dots');
+    var lightbox   = document.getElementById('binance-lightbox');
+    var lbImg      = document.getElementById('binance-lb-img');
+    var lbLabel    = document.getElementById('binance-lb-label');
+    var dots       = [];
+
+    slides.forEach(function (s) {
+      var img = new Image();
+      img.src = s.src;
+    });
+
+    slides.forEach(function (_, i) {
+      var dot = document.createElement('button');
+      dot.className = 'gallery-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Ir para slide ' + (i + 1));
+      dot.addEventListener('click', function () { goTo(i); });
+      dotsEl.appendChild(dot);
+      dots.push(dot);
+    });
+
+    function updateDots() {
+      dots.forEach(function (d, i) { d.classList.toggle('active', i === current); });
+    }
+
+    function goTo(idx) {
+      current = (idx + slides.length) % slides.length;
+      var s = slides[current];
+
+      imgEl.classList.add('fade');
+      setTimeout(function () {
+        imgEl.src = s.src;
+        imgEl.onload = function () { imgEl.classList.remove('fade'); };
+      }, 150);
+
+      labelEl.textContent   = s.label;
+      counterEl.textContent = '[' + String(current + 1).padStart(2, '0') + '/' + slides.length + ']';
+      if (lightbox.classList.contains('open')) {
+        lbImg.src           = s.src;
+        lbLabel.textContent = s.label;
+      }
+      updateDots();
+    }
+
+    document.getElementById('binance-prev').addEventListener('click', function (e) {
+      e.stopPropagation();
+      goTo(current - 1);
+    });
+    document.getElementById('binance-next').addEventListener('click', function (e) {
+      e.stopPropagation();
+      goTo(current + 1);
+    });
+
+    document.getElementById('binance-viewport').addEventListener('click', function (e) {
+      if (e.target.classList.contains('gallery-btn')) return;
+      lbImg.src           = slides[current].src;
+      lbLabel.textContent = slides[current].label;
+      lightbox.classList.add('open');
+    });
+
+    function closeLightbox() { lightbox.classList.remove('open'); }
+    document.getElementById('binance-lb-close').addEventListener('click', closeLightbox);
+    lightbox.addEventListener('click', function (e) {
+      if (e.target === lightbox || e.target === lbImg) closeLightbox();
+    });
+
+    document.getElementById('binance-lb-prev').addEventListener('click', function (e) {
+      e.stopPropagation();
+      goTo(current - 1);
+    });
+    document.getElementById('binance-lb-next').addEventListener('click', function (e) {
+      e.stopPropagation();
+      goTo(current + 1);
+    });
+
+    document.addEventListener('keydown', function (e) {
+      if (lightbox.classList.contains('open')) {
+        if (e.key === 'Escape')     closeLightbox();
+        if (e.key === 'ArrowLeft')  goTo(current - 1);
+        if (e.key === 'ArrowRight') goTo(current + 1);
+        return;
+      }
+    });
+
+    var startX = 0;
+    var viewport = document.getElementById('binance-viewport');
     viewport.addEventListener('touchstart', function (e) { startX = e.touches[0].clientX; }, { passive: true });
     viewport.addEventListener('touchend', function (e) {
       var dx = e.changedTouches[0].clientX - startX;
